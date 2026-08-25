@@ -1,0 +1,39 @@
+{{- range $componentName, $component := .Values.components }}
+{{- if $component.enabled }}
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ printf "allow-%s" $componentName | trunc 63 | trimSuffix "-" }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    platform.io/network-component: {{ $componentName }}
+spec:
+
+  podSelector:
+    matchLabels:
+      platform.io/capability.{{ $componentName }}: "true"
+
+  policyTypes:
+    - Egress
+
+  egress:
+
+  {{- range $access := $component.access }}
+
+    - to:
+        - ipBlock:
+            cidr: {{ $access.cidr | quote }}
+
+      ports:
+      {{- range $port := $access.ports }}
+        - protocol: {{ $port.protocol }}
+          port: {{ $port.port }}
+      {{- end }}
+
+  {{- end }}
+
+---
+
+{{- end }}
+{{- end }}
