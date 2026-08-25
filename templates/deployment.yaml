@@ -1,0 +1,8 @@
+template:
+  metadata:
+    labels:
+      app: {{ $serviceName }}
+
+      {{- range $capability := $service.capabilities }}
+      platform.io/capability.{{ $capability }}: "true"
+      {{- end }}
