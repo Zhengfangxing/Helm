@@ -1,0 +1,30 @@
+components:
+  redis:
+    enabled: true
+    access:
+      - cidr: "10.30.0.0/24"
+        ports:
+          - protocol: TCP
+            port: 6379
+  cloudsql:
+    enabled: true
+    access:
+      - cidr: "10.20.0.0/24"
+        ports:
+          - protocol: TCP
+            port: 5432
+
+services:
+
+  backend:
+    enabled: true
+
+    capabilities:
+      - redis
+      - cloudsql
+
+  worker:
+    enabled: true
+
+    capabilities:
+      - redis
